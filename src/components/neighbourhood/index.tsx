@@ -17,7 +17,7 @@ function returnHasAndAmounts(limit: number, isS: boolean = false): number {
     const dayAmount = Math.floor(Math.random() * 10);
 
     if (isS) {
-        return hasItem ? dayAmount > limit ? limit : dayAmount : 0;
+        return hasItem ? 1 : 0;
     }
 
     return hasItem
