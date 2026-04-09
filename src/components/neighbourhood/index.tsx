@@ -21,9 +21,12 @@ function returnHasAndAmounts(limit: number, isS: boolean = false): number {
     }
 
     const anotherChance = Math.random() < 0.5 ? 0 : 1;
+    const anotherChance1 = Math.random() < 0.5 ? 0 : 1;
 
     return hasItem
         ? dayAmount === 0 ? 1 : dayAmount > limit ? limit : dayAmount
+        : anotherChance === 0
+        ? anotherChance1
         : anotherChance;
 }
 
@@ -53,6 +56,7 @@ function setHousesInfoCB(limit: number): Map<number, State> {
 function Neighbourhood(): JSX.Element {
     const LIMIT = 4;
     const [housesInfo, setHousesInfo] = useState(() => setHousesInfoCB(LIMIT));
+    const [housesRevealed, setHousesRevealed] = useState(1);
 
     useEffect(() => {
         setHousesInfo(setHousesInfoCB(LIMIT));
@@ -70,6 +74,8 @@ function Neighbourhood(): JSX.Element {
             }
             return newMap;
         });
+
+        setHousesRevealed((prev) => prev + 1);
     }
 
     const houses = Array.from(housesInfo.values()).map((info, index) => {
@@ -83,7 +89,7 @@ function Neighbourhood(): JSX.Element {
 
         return visited
             ? (
-                <div key={index} className="house visited">
+                <div key={String(index)} className="house visited">
                     <h3>House {index + 1}</h3>
                     <p>
                         {`Please have some c: ${cAmount}`}
@@ -100,7 +106,7 @@ function Neighbourhood(): JSX.Element {
                 </div>
             )
             : (
-                <div key={index} className="house">
+                <div key={String(index)} className="house">
                     <h3>House {index + 1}</h3>
                     <button
                         onClick={() => handleKnock(index)}
@@ -113,7 +119,7 @@ function Neighbourhood(): JSX.Element {
 
     return (
         <div className="neighbourhood">
-            <div className="houses">{houses}</div>
+            <div className="houses">{houses.slice(0, housesRevealed)}</div>
         </div>
     );
 }
