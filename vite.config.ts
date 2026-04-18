@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/Alms-Rounds/",
+  base: "/Alms-Round/",
   plugins: [
     react({
       babel: {
