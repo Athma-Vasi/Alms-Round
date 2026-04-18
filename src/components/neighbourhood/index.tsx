@@ -1,6 +1,6 @@
 import { type JSX, useEffect, useState } from "react";
 
-type State = {
+type HouseDonation = {
     carbAmount: number;
     fatAmount: number;
     proteinAmount: number;
@@ -9,6 +9,78 @@ type State = {
     yoghurtAmount: number;
     visited: boolean;
 };
+type HouseNumber = number;
+
+function createCarbAmount(): number {
+    const PRIMES = [
+        11,
+        13,
+        17,
+        19,
+        23,
+        29,
+        31,
+    ];
+    return PRIMES[Math.floor(Math.random() * PRIMES.length)];
+}
+
+function createFatAmount(): number {
+    const PRIMES = [
+        7,
+        11,
+        13,
+        17,
+    ];
+    return PRIMES[Math.floor(Math.random() * PRIMES.length)];
+}
+
+function createProteinAmount(): number {
+    const PRIMES = [
+        7,
+        11,
+        13,
+        17,
+    ];
+    return PRIMES[Math.floor(Math.random() * PRIMES.length)];
+}
+
+function createSidesAmount(): number {
+    const PRIMES = [
+        5,
+        7,
+        11,
+        13,
+    ];
+    return PRIMES[Math.floor(Math.random() * PRIMES.length)];
+}
+
+function createSugarAmount(): number {
+    function hasItem(): boolean {
+        const rand1 = Math.random();
+        const rand2 = Math.random();
+        const rand3 = Math.random();
+        const rand4 = Math.random();
+        return rand1 < rand2 ? rand3 < rand4 : rand3 > rand4;
+    }
+
+    const PRIMES = [
+        3,
+        5,
+        7,
+        11,
+    ];
+    return hasItem() ? PRIMES[Math.floor(Math.random() * PRIMES.length)] : 0;
+}
+
+function createYoghurtAmount(): number {
+    const PRIMES = [
+        3,
+        5,
+        7,
+        11,
+    ];
+    return PRIMES[Math.floor(Math.random() * PRIMES.length)];
+}
 
 function returnHasAndAmounts(isSugar: boolean = false): number {
     const rand1 = Math.random();
@@ -49,13 +121,15 @@ function returnHasAndAmounts(isSugar: boolean = false): number {
         : anotherChance;
 }
 
-function setHousesInfoCB(housesLimit: number): Map<number, State> {
+function setNeighbourhoodDonationsCB(
+    housesLimit: number,
+): Map<HouseNumber, HouseDonation> {
     const rand = Math.floor(Math.random() * 10);
     const length = rand < housesLimit ? housesLimit : rand;
 
     return Array.from({ length })
-        .reduce<Map<number, State>>((acc, _curr, index) => {
-            const state: State = {
+        .reduce<Map<HouseNumber, HouseDonation>>((acc, _curr, index) => {
+            const state: HouseDonation = {
                 carbAmount: returnHasAndAmounts(),
                 fatAmount: returnHasAndAmounts(),
                 proteinAmount: returnHasAndAmounts(),
@@ -72,77 +146,79 @@ function setHousesInfoCB(housesLimit: number): Map<number, State> {
 
 function Neighbourhood(): JSX.Element {
     const HOUSES_LIMIT = 4;
-    const [housesInfo, setHousesInfo] = useState(() =>
-        setHousesInfoCB(HOUSES_LIMIT)
+    const [neighbourhoodDonations, setNeighbourhoodDonations] = useState(() =>
+        setNeighbourhoodDonationsCB(HOUSES_LIMIT)
     );
     const [housesRevealed, setHousesRevealed] = useState(1);
 
     useEffect(() => {
-        setHousesInfo(setHousesInfoCB(HOUSES_LIMIT));
+        setNeighbourhoodDonations(setNeighbourhoodDonationsCB(HOUSES_LIMIT));
     }, []);
 
-    function handleKnock(houseIndex: number) {
-        setHousesInfo((prev) => {
-            const newMap = new Map(prev);
-            const houseInfo = newMap.get(houseIndex);
-            if (houseInfo) {
-                newMap.set(houseIndex, {
-                    ...houseInfo,
+    function handleKnock(houseNumber: HouseNumber): void {
+        setNeighbourhoodDonations((prev) => {
+            const neighbourhoodDonations = new Map(prev);
+            const houseDonation = neighbourhoodDonations.get(houseNumber);
+            if (houseDonation) {
+                neighbourhoodDonations.set(houseNumber, {
+                    ...houseDonation,
                     visited: true,
                 });
             }
-            return newMap;
+            return neighbourhoodDonations;
         });
 
         setHousesRevealed((prev) => prev + 1);
     }
 
-    const houses = Array.from(housesInfo.values()).map((state, index) => {
-        const {
-            carbAmount,
-            fatAmount,
-            proteinAmount,
-            sidesAmount,
-            sugarAmount,
-            yoghurtAmount,
-            visited,
-        } = state;
+    const houses = Array.from(neighbourhoodDonations.values()).map(
+        (houseDonation, index) => {
+            const {
+                carbAmount,
+                fatAmount,
+                proteinAmount,
+                sidesAmount,
+                sugarAmount,
+                yoghurtAmount,
+                visited,
+            } = houseDonation;
 
-        return visited
-            ? (
-                <div key={String(index)} className="house visited">
-                    <h3>House {index + 1}</h3>
-                    <p>
-                        {`Please have some carbohydrates: ${carbAmount}`}
-                    </p>
-                    <p>
-                        {`Please have some fat: ${fatAmount}`}
-                    </p>
-                    <p>
-                        {`Please have some protein: ${proteinAmount}`}
-                    </p>
-                    <p>
-                        {`Please have some sides: ${sidesAmount}`}
-                    </p>
-                    <p>
-                        {`Please have some sugar: ${sugarAmount}`}
-                    </p>
-                    <p>
-                        {`Please have some yoghurt: ${yoghurtAmount}`}
-                    </p>
-                </div>
-            )
-            : (
-                <div key={String(index)} className="house">
-                    <h3>House {index + 1}</h3>
-                    <button
-                        onClick={() => handleKnock(index)}
-                    >
-                        Knock
-                    </button>
-                </div>
-            );
-    });
+            return visited
+                ? (
+                    <div key={String(index)} className="house visited">
+                        <h3>House {index + 1}</h3>
+                        <p>
+                            {`Please have some carbohydrates: ${carbAmount}`}
+                        </p>
+                        <p>
+                            {`Please have some fat: ${fatAmount}`}
+                        </p>
+                        <p>
+                            {`Please have some protein: ${proteinAmount}`}
+                        </p>
+                        <p>
+                            {`Please have some sides: ${sidesAmount}`}
+                        </p>
+                        <p>
+                            {`Please have some sugar: ${sugarAmount}`}
+                        </p>
+                        <p>
+                            {`Please have some yoghurt: ${yoghurtAmount}`}
+                        </p>
+                    </div>
+                )
+                : (
+                    <div key={String(index)} className="house">
+                        <h3>House {index + 1}</h3>
+                        <button
+                            onClick={() => handleKnock(index)}
+                        >
+                            Knock
+                        </button>
+                    </div>
+                );
+        },
+    );
 
     return (
         <div className="neighbourhood">
