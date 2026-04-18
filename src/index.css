@@ -100,7 +100,7 @@ button:focus-visible {
         border: 1px solid oklch(38.666% 0.00004 271.152);
         border-radius: 8px;
         padding: 16px;
-        width: clamp(200px, 30vw, 300px);
+        width: clamp(225px, 33vw, 330px);
         background-color: oklch(21.779% 0.00002 271.152);
         display: flex;
         flex-direction: column;
