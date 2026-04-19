@@ -16,6 +16,12 @@ function returnHasAndAmounts(): number {
     const rand4 = Math.random();
     const hasItem = rand1 < rand2 ? rand3 < rand4 : rand3 > rand4;
     const PRIMES = [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
         17,
         19,
         23,
@@ -28,6 +34,12 @@ function returnHasAndAmounts(): number {
         59,
         61,
         67,
+        71,
+        73,
+        79,
+        83,
+        89,
+        97,
     ];
     const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
     const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
