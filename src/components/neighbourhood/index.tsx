@@ -30,7 +30,6 @@ function returnHasAndAmounts(): number {
         67,
     ];
     const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
-
     const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
     const anotherChance1 = Math.random() < 0.5 ? 0 : dayAmount;
 
