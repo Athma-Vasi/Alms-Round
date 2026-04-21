@@ -1,13 +1,23 @@
 import { type JSX, useEffect, useState } from "react";
 
-type HouseDonation = {
-    carbAmount: number;
-    fatAmount: number;
-    proteinAmount: number;
-    sidesAmount: number;
-    visited: boolean;
-};
+type FoodKind = "carbs" | "fats" | "proteins" | "sides" | "yoghurt";
+type HouseDonation =
+    & {
+        [K in FoodKind as `${K}Amount`]: number;
+    }
+    & {
+        visited: boolean;
+    };
+
 type HouseNumber = number;
+
+const foodKind_primes_map: Record<FoodKind, number[]> = {
+    "carbs": [23, 29, 31, 37, 43, 47, 53, 59, 61, 67, 71, 73],
+    "fats": [7, 11, 13, 17, 19, 23],
+    "proteins": [11, 13, 17, 19, 23],
+    "sides": [13, 17, 19, 23, 29, 31, 37, 43],
+    "yoghurt": [37, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97],
+};
 
 function hasDonation() {
     const rand1 = Math.random();
@@ -17,53 +27,14 @@ function hasDonation() {
     return rand1 < rand2 ? rand3 < rand4 : rand3 > rand4;
 }
 
-function carbsDonation() {
-    const PRIMES = [19, 23, 29, 31, 37, 43, 47, 53];
-    const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
-    const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
-    const anotherChance1 = Math.random() < 0.5 ? 0 : dayAmount;
+function receiveDonation(foodKind: FoodKind): number {
+    const PRIMES = foodKind_primes_map[foodKind];
+    const amount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
+    const anotherChance = Math.random() < 0.5 ? 0 : amount;
+    const anotherChance1 = Math.random() < 0.5 ? 0 : amount;
 
     return hasDonation()
-        ? dayAmount
-        : anotherChance === 0
-        ? anotherChance1
-        : anotherChance;
-}
-
-function fatsDonation() {
-    const PRIMES = [7, 11, 13, 17, 19, 23];
-    const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
-    const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
-    const anotherChance1 = Math.random() < 0.5 ? 0 : dayAmount;
-
-    return hasDonation()
-        ? dayAmount
-        : anotherChance === 0
-        ? anotherChance1
-        : anotherChance;
-}
-
-function proteinsDonation() {
-    const PRIMES = [11, 13, 17, 19, 23];
-    const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
-    const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
-    const anotherChance1 = Math.random() < 0.5 ? 0 : dayAmount;
-
-    return hasDonation()
-        ? dayAmount
-        : anotherChance === 0
-        ? anotherChance1
-        : anotherChance;
-}
-
-function sidesDonation() {
-    const PRIMES = [13, 17, 19, 23, 29, 31, 37, 43];
-    const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
-    const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
-    const anotherChance1 = Math.random() < 0.5 ? 0 : dayAmount;
-
-    return hasDonation()
-        ? dayAmount
+        ? amount
         : anotherChance === 0
         ? anotherChance1
         : anotherChance;
@@ -78,10 +49,11 @@ function setNeighbourhoodDonationsCB(
     return Array.from({ length })
         .reduce<Map<HouseNumber, HouseDonation>>((acc, _curr, index) => {
             const state: HouseDonation = {
-                carbAmount: carbsDonation(),
-                fatAmount: fatsDonation(),
-                proteinAmount: proteinsDonation(),
-                sidesAmount: sidesDonation(),
+                carbsAmount: receiveDonation("carbs"),
+                fatsAmount: receiveDonation("fats"),
+                proteinsAmount: receiveDonation("proteins"),
+                sidesAmount: receiveDonation("sides"),
+                yoghurtAmount: receiveDonation("yoghurt"),
                 visited: false,
             };
             acc.set(index, state);
@@ -120,10 +92,11 @@ function Neighbourhood(): JSX.Element {
     const houses = Array.from(neighbourhoodDonations.values()).map(
         (houseDonation, index) => {
             const {
-                carbAmount,
-                fatAmount,
-                proteinAmount,
+                carbsAmount,
+                fatsAmount,
+                proteinsAmount,
                 sidesAmount,
+                yoghurtAmount,
                 visited,
             } = houseDonation;
 
@@ -132,16 +105,19 @@ function Neighbourhood(): JSX.Element {
                     <div key={String(index)} className="house visited">
                         <h3>House {index + 1}</h3>
                         <p>
-                            {`Please have some carbs: ${carbAmount}`}
+                            {`Please have some carbs: ${carbsAmount}`}
                         </p>
                         <p>
-                            {`Please have some fat: ${fatAmount}`}
+                            {`Please have some fat: ${fatsAmount}`}
                         </p>
                         <p>
-                            {`Please have some protein: ${proteinAmount}`}
+                            {`Please have some protein: ${proteinsAmount}`}
                         </p>
                         <p>
                             {`Please have some sides: ${sidesAmount}`}
+                        </p>
+                        <p>
+                            {`Please have some yoghurt: ${yoghurtAmount}`}
                         </p>
                     </div>
                 )
@@ -200,12 +176,12 @@ export default Neighbourhood;
         89,
         97,
     ];
-    const dayAmount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
-    const anotherChance = Math.random() < 0.5 ? 0 : dayAmount;
-    const anotherChance1 = Math.random() < 0.5 ? 0 : dayAmount;
+    const amount = PRIMES[Math.floor(Math.random() * PRIMES.length)];
+    const anotherChance = Math.random() < 0.5 ? 0 : amount;
+    const anotherChance1 = Math.random() < 0.5 ? 0 : amount;
 
     return hasItem
-        ? dayAmount
+        ? amount
         : anotherChance === 0
         ? anotherChance1
         : anotherChance;
