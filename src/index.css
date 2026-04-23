@@ -124,5 +124,18 @@ button:focus-visible {
         background-color: oklch(28.502% 0.00003 271.152);
       }
     }
+
+    .totals {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 3em;
+
+      p {
+        margin: 0.25rem;
+        text-align: center;
+      }
+    }
   }
 }

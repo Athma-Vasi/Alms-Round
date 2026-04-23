@@ -10,12 +10,15 @@ type HouseDonation =
     };
 
 type HouseNumber = number;
+type TotalAlms = {
+    [Kind in FoodKind as `${Kind}Total`]: number;
+};
 
 const FOODKIND_PRIMES_TABLE: Record<FoodKind, number[]> = {
     "carbs": [23, 29, 31, 37, 43, 47, 53, 59, 61, 67, 71, 73],
     "fats": [7, 11, 13, 17, 19, 23],
     "proteins": [11, 13, 17, 19, 23],
-    "sides": [13, 17, 19, 23, 29, 31, 37, 43],
+    "sides": [13, 17, 19, 23, 29, 31, 37, 43, 47, 53],
     "yoghurt": [37, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97],
 };
 
@@ -83,6 +86,45 @@ function Neighbourhood(): JSX.Element {
         setHousesRevealed((prev) => prev + 1);
     }
 
+    function sumDonations(
+        neighbourhoodDonations: Map<HouseNumber, HouseDonation>,
+        housesRevealed: number,
+    ): TotalAlms {
+        const initialAcc: TotalAlms = {
+            carbsTotal: 0,
+            fatsTotal: 0,
+            proteinsTotal: 0,
+            sidesTotal: 0,
+            yoghurtTotal: 0,
+        };
+
+        return Array.from(neighbourhoodDonations)
+            .reduce<TotalAlms>(
+                (acc, [houseNumber, houseDonation]) => {
+                    if (houseNumber >= housesRevealed) {
+                        return acc;
+                    }
+
+                    const {
+                        carbsAmount,
+                        fatsAmount,
+                        proteinsAmount,
+                        sidesAmount,
+                        yoghurtAmount,
+                    } = houseDonation;
+
+                    acc.carbsTotal += carbsAmount;
+                    acc.fatsTotal += fatsAmount;
+                    acc.proteinsTotal += proteinsAmount;
+                    acc.sidesTotal += sidesAmount;
+                    acc.yoghurtTotal += yoghurtAmount;
+
+                    return acc;
+                },
+                initialAcc,
+            );
+    }
+
     const houses = Array.from(neighbourhoodDonations.values()).map(
         (houseDonation, index) => {
             const {
@@ -128,9 +170,29 @@ function Neighbourhood(): JSX.Element {
         },
     );
 
+    const {
+        carbsTotal,
+        fatsTotal,
+        proteinsTotal,
+        sidesTotal,
+        yoghurtTotal,
+    } = sumDonations(neighbourhoodDonations, housesRevealed);
+
+    const neighbourhoodAlmsElement = (
+        <div className="totals">
+            <h2>Neighbourhood Alms</h2>
+            <p>{`Carbs: ${carbsTotal}`}</p>
+            <p>{`Fats: ${fatsTotal}`}</p>
+            <p>{`Proteins: ${proteinsTotal}`}</p>
+            <p>{`Sides: ${sidesTotal}`}</p>
+            <p>{`Yoghurt: ${yoghurtTotal}`}</p>
+        </div>
+    );
+
     return (
         <div className="neighbourhood">
             <div className="houses">{houses.slice(0, housesRevealed)}</div>
+            {neighbourhoodAlmsElement}
         </div>
     );
 }
